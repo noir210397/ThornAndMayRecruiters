@@ -1,22 +1,23 @@
 import { Schema, model, } from 'mongoose';
-import { IJob, JobType } from 'src/types/jobs';
-const jobSchema = new Schema<IJob>({
-    canApplyViaIndeed: { type: Boolean, default: false },
-    details: {
-        location: String,
+import { CreateJobRequest } from 'src/validators/job/job.validators';
+
+const jobSchema = new Schema<CreateJobRequest>({
+    applyViaIndeed: { type: String, default: null },
+    address: {
+        postCode: String,
+        streetAddress: String,
+        town: String
     },
-    type: { type: String, default: JobType.Perm },
+    type: String,
     pay: {
         minPay: Number,
         maxPay: Number
     },
-    sector: String,
-    roleDescription: String,
+    sectors: [String],
+    description: String,
     whatYouNeed: [String],
-    requirements: {
-        days: { type: [String] },
-        timeDescription: String,
-    },
+    days: [String],
+    shiftTimes: [String],
     applicationEmail: String
 }, {
     timestamps: true

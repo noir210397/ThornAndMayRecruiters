@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 import { StatusCode } from "src/constants/http";
-import { changeUserPassword, createAdmin, createManager, getResetPasswordToken, resetPassword, signInUser } from "src/services/auth.service";
+import { changeUserPassword, createAdmin, createAgent, createManager, getResetPasswordToken, resetPassword, signInUser } from "src/services/auth.service";
 import { CustomError } from "src/utils/customerror";
-import { changePasswordSchema, createAdminOrManagerSchema, loginSchema, passwordResetSchema, resetTokenSchema } from "src/validators/user/user.validators";
+import { changePasswordSchema, createAdminOrManagerSchema, createAgentSchema, loginSchema, passwordResetSchema, resetTokenSchema } from "src/validators/user/user.validators";
 
 export const signInUserHandler: RequestHandler = async (req, res) => {
     const { success, data, error } = loginSchema.safeParse(req.body)
@@ -50,9 +50,14 @@ export const changePasswordHandler: RequestHandler = async (req, res) => {
     if (!success) {
         throw new CustomError(StatusCode.Status400BadRequest, error)
     }
-
-    await changeUserPassword(req.user!.email, data.password)
+    await changeUserPassword(req.user!, data.password)
     return res.sendStatus(StatusCode.Status204NoContent)
+}
+export const createAgentHandler: RequestHandler = async (req, res) => {
+    const { success, data, error } = createAgentSchema.safeParse(req.body)
+    if (!success) throw new CustomError(StatusCode.Status400BadRequest, error)
+    const tokens = await createAgent(data)
+    return res.json(tokens)
 }
 
 

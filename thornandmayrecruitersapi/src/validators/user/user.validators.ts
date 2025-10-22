@@ -1,12 +1,10 @@
 import { Role } from "src/types/roles";
 import z from "zod"
+import { addressSchema } from "../base";
 
 const passwordPattern =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
 
-// UK postcode regex (simplified)
-const ukPostcodePattern =
-    /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i;
 
 // UK mobile number regex (e.g. 07123 456789, +44 7123 456789)
 const ukMobilePattern =
@@ -86,18 +84,7 @@ export const createAgentSchema = createAdminOrManagerSchema.omit({ role: true })
     email: z
         .email("Invalid email address")
         .trim(),
-    streetAddress: z
-        .string()
-        .trim()
-        .min(1, "Street address is required"),
-    postCode: z
-        .string()
-        .trim()
-        .regex(ukPostcodePattern, "Invalid UK postcode"),
-    town: z
-        .string()
-        .trim()
-        .min(1, "Town is required"),
+    address: addressSchema,
     password: z
         .string()
         .trim()
@@ -109,3 +96,14 @@ export const createAgentSchema = createAdminOrManagerSchema.omit({ role: true })
 // .strict();
 export type createAgentRequest = z.infer<typeof createAgentSchema>
 
+export const updateAgentSchema = createAgentSchema.partial().omit({
+    email: true,
+    age: true,
+    firstName: true,
+    lastName: true,
+    password: true
+})
+export const updateAdminOrManager = createAdminOrManagerSchema.partial().omit({
+    email: true,
+    password: true
+})

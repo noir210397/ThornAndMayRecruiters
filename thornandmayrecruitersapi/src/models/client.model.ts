@@ -1,11 +1,13 @@
 import { model, Schema } from "mongoose";
-import { IClient } from "src/types/client";
+import { CreateClientRequest } from "src/validators/client/client.validators";
 
-const clientSchema = new Schema<IClient>({
-    address: String,
+const clientSchema = new Schema<CreateClientRequest>({
     companyName: String,
-    postCode: String,
-    town: String
+    address: {
+        postCode: String,
+        streetAddress: String,
+        town: String,
+    },
 })
 const Client = model("Clients", clientSchema)
 export default Client

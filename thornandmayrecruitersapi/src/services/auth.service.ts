@@ -2,7 +2,7 @@ import { JsonWebTokenError } from "jsonwebtoken";
 import { StatusCode } from "src/constants/http";
 import PasswordResetModel from "src/models/passwordreset.model";
 import User from "src/models/user.model";
-import { RefreshTokenPayload, ResetPasswordTokenPayload } from "src/types/token";
+import { AccessTokenPayload, RefreshTokenPayload, ResetPasswordTokenPayload } from "src/types/token";
 import { CustomError } from "src/utils/customerror";
 import { generateAccessToken, generatePasswordResetToken, generateRefreshToken, verifyToken } from "src/utils/jwthelper";
 import { hashPassword, isPasswordValid } from "src/utils/passwordhelper";
@@ -54,7 +54,7 @@ async function createManager(manager: createAdminorManagerRequest) {
     }
 }
 async function createAgent(agent: createAgentRequest) {
-    const user = await User.findOne({ email: agent.email }).exec()
+    const user = await User.findOne({ email: agent.email })
     if (user) {
         throw new CustomError(StatusCode.Status400BadRequest, { email: `user with this email address already exists` })
     }
@@ -72,14 +72,14 @@ async function createAgent(agent: createAgentRequest) {
         accessToken, refreshToken
     }
 }
-async function changeUserPassword(email: string, password: string) {
-    // if (!(userDetails.email === authorizedEmail)) throw new CustomError(StatusCode.Status401Unauthorized)
-    const user = await User.findOne({ email: email }).exec()
-    if (!user) {
-        throw new CustomError(StatusCode.Status400BadRequest, { email: `no user was foun with email ${email}` })
+async function changeUserPassword(user: AccessTokenPayload, password: string) {
+    const target = await User.findById(user.sub)
+    if (!target) {
+        throw new CustomError(StatusCode.Status400BadRequest, { email: `no user was foun with email ${user.email}` })
     }
-    user.password = await hashPassword(password)
-    user.save()
+    if (user.sub !== target._id.toString()) throw new CustomError(StatusCode.Status403Forbidden)
+    target.password = await hashPassword(password)
+    await target.save()
 }
 async function getResetPasswordToken(userDetails: ResetTokenRequest) {
     const user = await User.findOne({ email: userDetails.email }).exec()
@@ -87,18 +87,18 @@ async function getResetPasswordToken(userDetails: ResetTokenRequest) {
         throw new CustomError(StatusCode.Status400BadRequest, { email: `no user was found with email ${userDetails.email}` })
     }
     const passwordReset = await PasswordResetModel.create({ email: userDetails.email })
-    const resetToken = generatePasswordResetToken(userDetails.email, passwordReset._id.toString())
+    const resetToken = generatePasswordResetToken(user._id.toString(), passwordReset._id.toString())
     // send resetToken via email with baseUrl
 }
 async function resetPassword({ password, resetToken }: PasswordResetRequest) {
     const payload = verifyToken(resetToken, "reset") as ResetPasswordTokenPayload
     const reset = await PasswordResetModel.findByIdAndDelete(payload.jti).exec();
-    const user = await User.findOne({ email: payload.sub }).exec()
+    const user = await User.findOne({ _id: payload.sub }).exec()
     if (!reset) {
         throw new CustomError(StatusCode.Status400BadRequest, null, "invalid or expired token")
     }
     if (!user) {
-        throw new CustomError(StatusCode.Status400BadRequest, null, `no user with Email:${payload.sub}`)
+        throw new CustomError(StatusCode.Status400BadRequest, null, `no user with id:${payload.sub}`)
     }
     user.password = await hashPassword(password)
     await user.save()

@@ -16,7 +16,7 @@ export function errorHandler(
     if (err instanceof CustomError) {
         const body: ErrorResponseBody<typeof err.errors> = {
             message: err.message,
-            ...(err.errors !== undefined && { errors: err.errors }),
+            ...(err.errors !== null && { errors: err.errors }),
         };
         res.status(err.statusCode).json(body);
         return;

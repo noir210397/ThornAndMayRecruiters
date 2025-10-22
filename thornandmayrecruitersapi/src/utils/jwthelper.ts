@@ -40,12 +40,12 @@ export function verifyToken(token: string, type: "refresh" | "access" | "reset" 
     }
 
 }
-export function generatePasswordResetToken(email: string, id: string): string {
+export function generatePasswordResetToken(sub: string, id: string): string {
     const key = process.env.JWT_RESET_TOKEN_SECRET_KEY
     if (!key) throw new Error("no secret key was provided")
     return jwt.sign(
         {
-            sub: email, jti: id
+            sub: sub, jti: id
         },
         key,
         {
