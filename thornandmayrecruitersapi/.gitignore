@@ -20,7 +20,7 @@ lerna-debug.log*
 .pnpm-store/
 
 # --- TypeScript / builds ---
-dist/
+# dist/
 build/
 lib/
 out/
