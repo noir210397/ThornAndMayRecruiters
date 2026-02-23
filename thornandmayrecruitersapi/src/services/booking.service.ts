@@ -34,7 +34,7 @@ export async function cancelBooking(user: AccessTokenPayload, bookingId: string)
         await Shift.findByIdAndUpdate(booking._id, { $inc: { agentsBooked: -1, availableSlots: 1 } }).session(session)
     } catch (err) {
         if (err instanceof CustomError) throw err
-        else throw new CustomError(StatusCode.Status500ServerError, null, "unableto delete booking try again")
+        else throw new CustomError(StatusCode.Status500ServerError, null, "unable to delete booking try again")
     }
     finally {
         await session.endSession()

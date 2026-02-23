@@ -20,7 +20,7 @@ export type ResetTokenRequest = z.infer<typeof resetTokenSchema>
 export const loginSchema = resetTokenSchema.extend({
     email: z.email('Invalid email address').trim(),
     password: z
-        .string().trim()
+        .string("password is required").trim()
         .regex(
             passwordPattern,
             'Password must be at least 8 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character'

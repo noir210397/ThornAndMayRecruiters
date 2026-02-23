@@ -12,7 +12,7 @@ export interface IBooking {
         email: string,
         fullName: string,
     },
-    isActive: boolean
+    // isActive: boolean
     status: "active" | "inactive" | "cancelled"
-    isCancelled: boolean
+    // isCancelled: boolean
 }

@@ -1,6 +1,8 @@
 import { model, Schema, Types } from "mongoose";
 import { IBooking } from "src/types/booking";
 
+// holds all bookings along with agents information
+
 const bookingSchema = new Schema<IBooking>({
     client: {
         companyName: String,
@@ -20,8 +22,8 @@ const bookingSchema = new Schema<IBooking>({
         email: String
     },
     status: { type: String, default: "active" },
-    isActive: { type: Boolean, default: true },
-    isCancelled: { type: Boolean, default: true }
+    // isActive: { type: Boolean, default: true },
+    // isCancelled: { type: Boolean, default: false }
 })
 const Booking = model("Bookings", bookingSchema)
 export default Booking

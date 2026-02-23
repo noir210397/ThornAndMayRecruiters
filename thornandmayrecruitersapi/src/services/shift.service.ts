@@ -11,6 +11,9 @@ import { CustomError } from "src/utils/customerror";
 import { formatJSON } from "src/utils/formatData";
 import { BaseQuery } from "src/validators/base";
 import { CreateShiftRequest, UpdateShiftRequest } from "src/validators/shift/shift.validators";
+import { object } from "zod";
+
+
 
 export const createShift = async (shift: CreateShiftRequest) => {
     // 1) Client must exist
@@ -76,8 +79,10 @@ export const updateShift = async (newShiftValues: UpdateShiftRequest, shiftId: s
         await session.withTransaction(async () => {
             const shiftExists = await Shift.exists({ _id: shiftId }).session(session)
             if (!shiftExists) throw new CustomError(StatusCode.Status404NotFound, `no shift found with id:${shiftId}`)
-            if (rest.agentsRequired || rest.endTime || rest.isPublic || rest.startTime) {
+            //if other properties are to be updated
+            if (Object.keys(rest).length > 0) {
                 await Shift.findByIdAndUpdate(shiftId, { ...rest }).session(session)
+                //update start and endtime based on starttime
                 if (rest.startTime) {
                     await Booking.updateMany({ shiftId: shiftId }, { startTime: rest.startTime.toDate(), endTime: rest.endTime!.toDate() }).session(session)
                 }
@@ -97,6 +102,7 @@ export const updateShift = async (newShiftValues: UpdateShiftRequest, shiftId: s
                         { session, ordered: false }
                     );
                     await Shift.findByIdAndUpdate(shiftId, { $inc: { agentsBooked: newAgents.length, availableSlots: -newAgents.length } }).session(session)
+                    //send email or text to each agent
                 }
                 else throw new CustomError(StatusCode.Status403Forbidden, `there are currently only ${shift!.availableSlots} slot${shift!.availableSlots > 1 ? "s" : ""} remaining`)
             }
@@ -200,6 +206,8 @@ export async function getSingleShift(shiftId: string, user: AccessTokenPayload,)
         return formatJSON(shift)
     }
 }
+
+//helper
 async function validateAgents(agentList: string[]) {
     const agents = await User.find({ _id: { $in: agentList }, role: Role.AGENT })
         .lean();

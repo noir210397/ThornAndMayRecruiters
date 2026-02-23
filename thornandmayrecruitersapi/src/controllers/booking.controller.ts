@@ -19,6 +19,7 @@ export const deleteBookinghandler: RequestHandler = async (req, res) => {
 export const updateBookinghandler: RequestHandler = async (req, res) => {
     const { success, data, error } = updateBookingSchema.safeParse(req.body)
     if (!success) throw new CustomError(StatusCode.Status400BadRequest, error)
+    if (Object.keys(data).length === 0) return res.json("no updates needed")
     await updateBooking(data, req.params.id)
     return res.sendStatus(204)
 }

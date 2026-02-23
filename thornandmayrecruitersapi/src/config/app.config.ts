@@ -7,6 +7,13 @@ const app = express();
 app.use(cors)
 app.use(express.json())
 app.use(express.urlencoded())
+// ensure zod always gets an empty object not undefined
+app.use((req, res, next) => {
+    if (['POST', 'PUT'].includes(req.method) && req.body === undefined) {
+        req.body = {};
+    }
+    next();
+});
 app.use("/api", allRoutes);
 app.use(notfoundHandler)
 app.use(errorHandler)

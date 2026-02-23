@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { Role } from "src/types/roles";
 import { createAgentRequest } from "src/validators/user/user.validators";
-type IUser = createAgentRequest & {
+export type IUser = createAgentRequest & {
     role: Role,
     mustChangePassword: boolean
     isDeleted: boolean

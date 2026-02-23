@@ -1,6 +1,8 @@
 import { Schema, model, } from 'mongoose';
 import { CreateJobRequest } from 'src/validators/job/job.validators';
 
+//holds jobs temps or perm
+
 const jobSchema = new Schema<CreateJobRequest>({
     applyViaIndeed: { type: String, default: null },
     address: {

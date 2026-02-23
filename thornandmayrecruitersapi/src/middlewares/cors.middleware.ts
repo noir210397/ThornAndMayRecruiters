@@ -1,8 +1,7 @@
 import cors, { CorsOptions } from 'cors';
 
 const whitelist = [
-    'http://example1.com',
-    'http://example2.com'
+    'http://localhost:3001',
 ];
 
 const corsOptions: CorsOptions = {

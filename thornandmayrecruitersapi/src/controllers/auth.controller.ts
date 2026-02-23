@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { StatusCode } from "src/constants/http";
 import { changeUserPassword, createAdmin, createAgent, createManager, getResetPasswordToken, resetPassword, signInUser } from "src/services/auth.service";
 import { CustomError } from "src/utils/customerror";
+import { updateClientSchema } from "src/validators/client/client.validators";
 import { changePasswordSchema, createAdminOrManagerSchema, createAgentSchema, loginSchema, passwordResetSchema, resetTokenSchema } from "src/validators/user/user.validators";
 
 export const signInUserHandler: RequestHandler = async (req, res) => {
@@ -36,7 +37,8 @@ export const getResetTokenHandler: RequestHandler = async (req, res) => {
     if (!success) {
         throw new CustomError(StatusCode.Status400BadRequest, error)
     }
-    res.json(await getResetPasswordToken(data))
+    await getResetPasswordToken(data)
+    res.sendStatus(200)
 }
 export const resetPasswordHandler: RequestHandler = async (req, res) => {
     const { success, data, error } = passwordResetSchema.safeParse(req.body)

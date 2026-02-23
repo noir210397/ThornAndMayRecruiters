@@ -2,7 +2,7 @@ import { model, Schema, Types } from "mongoose";
 import { CreateClientRequest } from "src/validators/client/client.validators";
 import { CreateShiftRequest } from "src/validators/shift/shift.validators";
 
-interface IShift extends Pick<CreateShiftRequest, "agentsRequired" | "isPublic"> {
+export interface IShift extends Pick<CreateShiftRequest, "agentsRequired" | "isPublic"> {
     startTime: Date,
     endTime: Date
     agentsBooked: number,
@@ -24,7 +24,7 @@ const shiftSchema = new Schema<IShift>({
     // agents: [Types.ObjectId],
     startTime: Date,
     endTime: Date,
-    isPublic: { type: Boolean, default: false },
+    isPublic: { type: Boolean, default: true },
     agentsBooked: { type: Number, default: 0 },
     availableSlots: Number
 })

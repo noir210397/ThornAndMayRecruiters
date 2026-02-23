@@ -22,11 +22,16 @@ export function errorHandler(
         return;
     }
     // If it's a built-in Error (but not our CustomError)
-    if (err instanceof Error) {
+    else if (err instanceof Error) {
         res.status(500).json({ message: err.message });
         return;
     }
+    else {
 
-    // Unknown error type
-    res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ message: 'Internal Server Error' });
+        // Unknown error type
+        console.log(err);
+
+    }
+
 }
