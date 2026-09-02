@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { changePasswordHandler, createAdminHandler, createAgentHandler, createManagerHandler, getResetTokenHandler, resetPasswordHandler, signInUserHandler } from "src/controllers/auth.controller";
+import { changePasswordHandler, createAdminHandler, createAgentHandler, createManagerHandler, getResetTokenHandler, refreshTokenHandler, resetPasswordHandler, signInUserHandler } from "src/controllers/auth.controller";
 import { authorize } from "src/middlewares/auth.middleware";
 const router = Router();
 router.post("/login", signInUserHandler);
+router.post("/refresh-token", refreshTokenHandler);
 router.post("/admin", authorize("MANAGER"), createAdminHandler);
 router.post("/manager", authorize("MANAGER"), createManagerHandler);
 router.post("/reset-token", getResetTokenHandler);

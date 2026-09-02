@@ -114,8 +114,7 @@ async function getNewAccessToken({ refreshToken }) {
         role: user.role
     };
     const accessToken = generateAccessToken(jwtPayload);
-    //change later so tokens to be used just once add sessions
-    // const refreshToken = generateRefreshToken({ sub: jwtPayload.sub, email: jwtPayload.email, })
+    refreshToken = generateRefreshToken({ sub: jwtPayload.sub, email: jwtPayload.email, });
     return {
         accessToken, refreshToken
     };

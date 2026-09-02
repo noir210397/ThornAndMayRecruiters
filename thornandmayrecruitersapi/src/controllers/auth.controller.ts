@@ -1,9 +1,9 @@
 import { RequestHandler } from "express";
 import { StatusCode } from "src/constants/http";
-import { changeUserPassword, createAdmin, createAgent, createManager, getResetPasswordToken, resetPassword, signInUser } from "src/services/auth.service";
+import { changeUserPassword, createAdmin, createAgent, createManager, getNewAccessToken, getResetPasswordToken, resetPassword, signInUser } from "src/services/auth.service";
 import { CustomError } from "src/utils/customerror";
 import { updateClientSchema } from "src/validators/client/client.validators";
-import { changePasswordSchema, createAdminOrManagerSchema, createAgentSchema, loginSchema, passwordResetSchema, resetTokenSchema } from "src/validators/user/user.validators";
+import { changePasswordSchema, createAdminOrManagerSchema, createAgentSchema, loginSchema, passwordResetSchema, refreshTokenSchema, resetTokenSchema } from "src/validators/user/user.validators";
 
 export const signInUserHandler: RequestHandler = async (req, res) => {
     const { success, data, error } = loginSchema.safeParse(req.body)
@@ -46,6 +46,13 @@ export const resetPasswordHandler: RequestHandler = async (req, res) => {
         throw new CustomError(StatusCode.Status400BadRequest, error)
     }
     res.json(await resetPassword(data))
+}
+export const refreshTokenHandler: RequestHandler = async (req, res) => {
+    const { success, data, error } = refreshTokenSchema.safeParse(req.body)
+    if (!success) {
+        throw new CustomError(StatusCode.Status400BadRequest, error)
+    }
+    res.json(await getNewAccessToken(data))
 }
 export const changePasswordHandler: RequestHandler = async (req, res) => {
     const { success, data, error } = changePasswordSchema.safeParse(req.body)
